@@ -6,47 +6,31 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import ru.gb.spring.entity.*;
 import ru.gb.spring.service.AmmunitionService;
+import ru.gb.spring.service.AmmunitionService.AmmoTypes;
 import ru.gb.spring.service.Rifle;
 
 @Configuration
-@ComponentScan("ru.gb.spring.entity")
+@ComponentScan("ru.gb.spring")
 public class ApplicationConfig {
 	
 	@Autowired
-	@Qualifier("Round10")
-	Round10 round10;
+	private AmmunitionService service;
 	
 	@Autowired
-	@Qualifier("Round20")
-	Round20 round20; 
-	
-	@Autowired
-	@Qualifier("Round56")
-	Round56 round56; 
-
-	@Bean("rifRound10")
-	public Rifle getRifle10() {
-		
-		Rifle rifle = new Rifle();
-		AmmunitionService.addAmmo(rifle, round10);
-		return rifle;
-	}
-	
 	@Bean("rifRound20")
-	public Rifle getRifle20() {
-		
-		Rifle rifle = new Rifle();
-		AmmunitionService.addAmmo(rifle, round20);
-		return rifle;
+	public Rifle getRifle20(@Qualifier("Rifle") Rifle rifle) throws Exception {
+		return getRifleWithAmmo(rifle, AmmoTypes.ROUND20);
 	}
 	
+	@Autowired
 	@Bean("rifRound5.6")
-	public Rifle getRifle56() {
-		
-		Rifle rifle = new Rifle();
-		AmmunitionService.addAmmo(rifle, round56);
+	public Rifle getRifle56(@Qualifier("Rifle") Rifle rifle) throws Exception {
+		return getRifleWithAmmo(rifle, AmmoTypes.ROUND56);
+	}
+	
+	private Rifle getRifleWithAmmo(Rifle rifle, AmmoTypes type) throws Exception {
+		service.addAmmo(rifle, type);
 		return rifle;
 	}
 }

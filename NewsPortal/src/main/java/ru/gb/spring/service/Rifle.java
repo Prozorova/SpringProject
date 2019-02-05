@@ -1,7 +1,12 @@
 package ru.gb.spring.service;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import ru.gb.spring.entity.Ammunition;
 
+@Component("Rifle")
+@Scope("prototype")
 public class Rifle {
 	
 	private static final String NAME_CONSTRUCTOR = "Rifle_%d";
@@ -34,4 +39,5 @@ public class Rifle {
 		else
 			throw new Exception("No ammunition!");
 	}
+	
 }

@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	
+</h:head>
+		
+<h:body>
+
+	<style type="text/css">
+		
+		body {
+			margin: 0;
+			height: 100vh;
+		}
+	
+		.container {
+			width: 80%;
+			height: 100%;
+			margin: 0 auto;
+			background: linear-gradient(to left, #555, #000);
+			font-family: Arial, sans-serif;
+			font-size: 16px;
+			color: darkgrey;
+			border-left: 1px solid #eaeaea;
+			border-right: 1px solid #eaeaea;
+			padding: 30px;
+			position: relative;
+		}
+		
+		h1 {
+			font-size: 200%;
+			font-family: fantasy, sans-serif;
+		}
+		
+		tr td {
+			padding: 10px 3px;
+		}
+		
+		tr th {
+			padding: 3px 3px;
+			font-family: fantasy, sans-serif;
+		}
+    	
+    	table {
+    		width: 100%;
+	        font-size: 14px;
+    		border: double #797979;
+			border-collapse: collapse;
+			text-align: left;
+    	}
+    	
+    	.ui-dialog {
+    		width: 70%;
+    	}
+    	
+    	textarea {
+    		width: 95%;
+    	}
+    	
+	</style>
+	
+	<div class="container">
+		<h1>Advertisements</h1>
+		
+		<h:form id="form">
+    		<p:growl id="msgs" showDetail="true" />
+				<p:dataTable var="adv" value="#{dataGridView.ads}" >
+							 
+				 	<p:column headerText="Id" width="30">
+				        <h:outputText value="#{adv.id}" />
+				    </p:column>
+				    
+				    <p:column headerText="Title">
+				        <h:outputText value="#{adv.title}" />
+				    </p:column>
+				 
+				    <p:column headerText="Category">
+				        <h:outputText value="#{adv.category.name}" />
+				    </p:column>
+				 
+				    <p:column headerText="Company">
+				        <h:outputText value="#{adv.company.companyName}" />
+				    </p:column>
+				    
+				    <p:column headerText="Published Date">
+				        <h:outputText value="#{adv.publishedDate}" />
+				    </p:column>
+				    
+				    <p:column style="width:32px; text-align: center">
+			             <p:commandButton update=":form:advDetail" oncomplete="PF('advDialog').show()" icon="pi pi-search" title="View">
+			             	<!-- <i class="fas fa-eye"></i> -->
+			                <f:setPropertyActionListener value="#{adv}" target="#{dataGridView.selectedAd}" />
+			            </p:commandButton>
+			        </p:column>
+			        
+				</p:dataTable>
+				
+				<p:commandButton value="ADD" id="addAd" update=":form:addAdv" oncomplete="PF('addDialog').show()" style="margin-right:20px;" styleClass="ui-priority-primary" />
+				
+				<p:dialog header="Add Advertisement" widgetVar="addDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+			        <p:outputPanel id="addAdv" style="text-align:center;">
+			            <p:panelGrid columns="2" cellpadding="5">
+			            
+			            	<p:outputLabel style="font-weight: bold;" value="Title:" for="addTitle" />
+			            	<p:inputText id="addTitle" value="#{addController.title}"/>
+			            	
+			            	<p:outputLabel style="font-weight: bold;" value="Category:" for="addCategory" />
+			            	<p:selectOneMenu id="addCategory" value="#{addController.category}" style="width:125px">
+			            		<f:selectItem itemLabel="Select One" itemValue="" />
+            					<f:selectItems value="#{addController.categories}" />
+			            	</p:selectOneMenu>
+			            	
+			            	<p:outputLabel style="font-weight: bold;" value="Company:" for="addCompany" />
+			            	<p:selectOneMenu id="addCompany" value="#{addController.companyName}" style="width:125px">
+			            		<f:selectItem itemLabel="Select One" itemValue="" />
+            					<f:selectItems value="#{addController.companies}" />
+			            	</p:selectOneMenu>
+			            	
+			            </p:panelGrid>
+			            
+			            <p:inputTextarea rows="10" value="#{addController.content}"  />
+			            
+			            <p:growl id="growl" life="2000" />
+			            <p:commandButton value="SAVE" id="addBtn" update="growl" action="#{addController.saveAd}" style="margin-right:20px;" styleClass="ui-priority-primary" />
+			            
+			        </p:outputPanel>
+			    </p:dialog>
+				
+				<p:dialog header="Advertisement Info" widgetVar="advDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+			        <p:outputPanel id="advDetail" style="text-align:center;">
+			            <p:panelGrid rendered="#{not empty dataGridView.selectedAd}">
+			            
+			               <f:facet name="header">
+				                <p:row>
+						            <p:column colspan="2">#{dataGridView.selectedAd.title}</p:column>
+						        </p:row>
+			                </f:facet>
+			                
+			                <p:row>
+						        <p:column style="font-weight: bold;">Id:</p:column>
+						        <p:column>#{dataGridView.selectedAd.id}</p:column>
+						    </p:row>
+						    <p:row>
+						        <p:column style="font-weight: bold;">Category:</p:column>
+						        <p:column>#{dataGridView.selectedAd.category.name}</p:column>
+						    </p:row>
+						    <p:row>
+						        <p:column style="font-weight: bold;">Published Date:</p:column>
+						        <p:column>#{dataGridView.selectedAd.publishedDate}</p:column>
+						    </p:row>
+						    <p:row>
+						        <p:column colspan="2" style="height:20px;"></p:column>
+						    </p:row>
+						    
+						    <p:row styleClass="ui-widget-header">
+						    	<p:column style="font-weight: bold;">Company:</p:column>
+						        <p:column>#{dataGridView.selectedAd.company.companyName}</p:column>
+						    </p:row>
+						    <p:row>
+						        <p:column style="font-weight: bold;">Website:</p:column>
+						        <p:column>#{dataGridView.selectedAd.company.website}</p:column>
+						    </p:row>
+						    <p:row>
+						        <p:column style="font-weight: bold;">Phone:</p:column>
+						        <p:column>#{dataGridView.selectedAd.company.phone}</p:column>
+						    </p:row>
+						    <p:row>
+						        <p:column colspan="2">#{dataGridView.selectedAd.company.description}</p:column>
+						    </p:row>
+						    <p:row>
+						        <p:column colspan="2" style="height:20px;"></p:column>
+						    </p:row>
+						    
+						    <p:row>
+						        <p:column colspan="2">#{dataGridView.selectedAd.content}</p:column>
+						    </p:row>
+			                 
+			            </p:panelGrid>
+			        </p:outputPanel>
+			    </p:dialog>
+			    
+		</h:form>
+	</div>
+<!-- 	
+    <style type="text/css"> 
+	    /*demo*/
+	    .ui-dataview-list .ui-dataview-row {
+	        border-bottom: 1px solid #A8A8A8;
+	        padding: 25px 10px;
+	        /* with the exported variables from Nova and Luna Themes*/
+	        border-bottom-color: var(input-border-color, #A8A8A8);
+	    }
+	 
+	    .logo {
+	        width: 5%;
+	    }
+	    .detail {
+	        width: 85%;
+	        padding-left: 25px;
+    }
+	</style>
+	
+	<h:form id="form">
+	    <p:dataView var="adv" value="#{dataGridView.ads}" rows="12" paginator="true" rowsPerPageTemplate="6,12,16"
+	                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+	                gridIcon="pi pi-th-large" listIcon="pi pi-bars">
+	 
+	        <p:dataViewGridItem>
+	            <p:panel header="#{adv.title}" style="text-align:center">
+	                <h:panelGrid columns="1" style="width:100%">
+	 
+	                    <h:outputText value="#{adv.category}" />
+	 
+	                    <p:commandLink update=":form:carDetail" oncomplete="PF('carDialog').show()" title="View Detail">
+	                        <h:outputText styleClass="ui-icon pi pi-search" style="margin:0 auto;" />
+	                        <f:setPropertyActionListener value="#{adv}" target="#{dataGridView.selectedAd}" />
+	                    </p:commandLink>
+	                </h:panelGrid>
+	            </p:panel>
+	        </p:dataViewGridItem>
+	 
+	        <p:dataViewListItem>
+	            <h:panelGrid columns="2" style="width:100%" columnClasses="detail">
+	 
+	                <p:outputPanel>
+	                    <h:panelGrid columns="2" cellpadding="5">
+	                        <h:outputText value="title:" />
+	                        <h:outputText value="#{adv.title}" style="font-weight: bold"/>
+	 
+	                        <h:outputText value="category:" />
+	                        <h:outputText value="#{adv.category}" style="font-weight: bold"/>
+	 
+	                        <h:outputText value="company:" />
+	                        <h:outputText value="#{adv.company}" style="font-weight: bold"/>
+	                        
+	                        <h:outputText value="publishedDate:" />
+	                        <h:outputText value="#{adv.publishedDate}" style="font-weight: bold"/>
+	                    </h:panelGrid>
+	                </p:outputPanel>
+	 
+	                <p:commandLink update=":form:carDetail" oncomplete="PF('carDialog').show()" title="View Detail">
+	                    <h:outputText styleClass="ui-icon pi pi-search" style="margin:0 auto;" />
+	                    <f:setPropertyActionListener value="#{adv}" target="#{dataGridView.selectedAd}" />
+	                </p:commandLink>
+	            </h:panelGrid>
+	        </p:dataViewListItem>
+	    </p:dataView>
+	 
+	    <p:dialog header="Car Info" widgetVar="carDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+	        <p:outputPanel id="carDetail" style="text-align:center;">
+	            <p:panelGrid  columns="1" rendered="#{not empty dataGridView.selectedAd}" columnClasses="label,value">
+	                
+	                <h:outputText value="Id:" />
+	                <h:outputText value="#{dataGridView.selectedAd.id}" />
+	 
+	                <h:outputText value="Title" />
+	                <h:outputText value="#{dataGridView.selectedAd.title}" />
+	 
+	                <h:outputText value="category:" />
+	                <h:outputText value="#{dataGridView.selectedAd.category}" />
+	 
+	                <h:outputText value="company" />
+	                <h:outputText value="#{dataGridView.selectedAd.company}" />
+	            </p:panelGrid>
+	        </p:outputPanel>
+	    </p:dialog>
+	</h:form> -->
+</h:body>
+</html>

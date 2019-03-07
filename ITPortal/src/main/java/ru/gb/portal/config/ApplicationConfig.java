@@ -2,8 +2,10 @@ package ru.gb.portal.config;
 
 import java.util.Properties;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -40,24 +42,29 @@ public class ApplicationConfig {
 			final DataSource dataSource,
 			@Value("${hibernate.show_sql}") final boolean showSQL,
 			@Value("${hibernate.hbm2ddl.auto}") final String tableSrategy,
-			@Value("${hibernate.dialect}") final String dialect
+			@Value("${hibernate.dialect}") final String dialect,
+			@Value("${hibernate.format_sql}") final String format,
+			@Value("${current_session_context_class}") final String curContext
 			) {
 		final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 		factoryBean.setDataSource(dataSource);
+		factoryBean.setPersistenceProvider(new HibernatePersistenceProvider());
 		factoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 		factoryBean.setPackagesToScan("ru.gb.portal.domain");
 		final Properties properties = new Properties();
-//		properties.put("hibernate.show_sql", showSQL);
+		properties.put("hibernate.show_sql", showSQL);
 		properties.put("hibernate.hbm2ddl.auto", tableSrategy);
 		properties.put("hibernate.dialect", dialect);
+		properties.put("hibernate.format_sql", format);
+		properties.put("current_session_context_class", curContext);
 		factoryBean.setJpaProperties(properties);
 		return factoryBean;
 	}
 	
 	@Bean
-	public PlatformTransactionManager transactionManager(final LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+	public PlatformTransactionManager transactionManager(final EntityManagerFactory entityManagerFactory) {
 		final JpaTransactionManager transactionManager = new JpaTransactionManager();
-		transactionManager.setEntityManagerFactory(entityManagerFactory.getObject());
+		transactionManager.setEntityManagerFactory(entityManagerFactory);
 		return transactionManager;
 	}
 }
